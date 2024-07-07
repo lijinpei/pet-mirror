@@ -31,6 +31,8 @@
  * Leiden University.
  */
 
+#include "config.h"
+
 #include <string.h>
 
 #include "id.h"
@@ -141,7 +143,7 @@ static bool is_vla_with_static_size(QualType T)
 	if (!T->isVariableArrayType())
 		return false;
 	vlatype = cast<VariableArrayType>(T);
-	return vlatype->getSizeModifier() == VariableArrayType::Static;
+	return vlatype->getSizeModifier() == CLANG_ARRAY_SIZE_MODIFIER::Static;
 }
 
 /* Return the type of the variable represented by "id" as an array.

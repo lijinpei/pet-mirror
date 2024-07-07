@@ -178,6 +178,16 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
 [Define if CompilerInstance::createPreprocessor takes TranslationUnitKind])])
 AC_EGREP_HEADER([DecayedType], [clang/AST/Type.h],
 	[AC_DEFINE([HAVE_DECAYEDTYPE], [], [Define if DecayedType is defined])])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+		[[#include <clang/Basic/SourceManager.h>]], [[
+	using namespace clang;
+	SourceManager* sm;
+	SourceLocation* loc;
+	SrcMgr::CharacteristicKind* c_kind;
+	const FileEntry* entry;
+	sm->createFileID(entry, *loc, *c_kind);
+]])], [], [AC_DEFINE([CEATEFILEID_TAKES_FILEENTRYREF_ONLY], [],
+	[Define if SourceManager::createFileID takes FileEntryRef only])])
 AC_EGREP_HEADER([setMainFileID], [clang/Basic/SourceManager.h],
 	[AC_DEFINE([HAVE_SETMAINFILEID], [],
 	[Define if SourceManager has a setMainFileID method])])
@@ -267,6 +277,15 @@ AC_EGREP_HEADER([ext_implicit_function_decl_c99],
 	[AC_DEFINE([ext_implicit_function_decl_c99],
 	[ext_implicit_function_decl],
 	[Define to ext_implicit_function_decl for older versions of clang])])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+	#include <clang/AST/Type.h>
+]], [[
+	sizeof(::clang::ArrayType::Static);
+]])],
+	[AC_DEFINE([CLANG_ARRAY_SIZE_MODIFIER], [::clang::ArrayType],
+		[Define if ArraySizeModifier is inside ArrayType])],
+	[AC_DEFINE([CLANG_ARRAY_SIZE_MODIFIER], [::clang::ArraySizeModifier],
+		[Define if ArraySizeModifier is an enum class inside clang])])
 
 LDFLAGS="$CLANG_LDFLAGS $LDFLAGS"
 
